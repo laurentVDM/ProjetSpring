@@ -1,0 +1,83 @@
+openapi: 3.0.3
+info:
+  title: VSX Share Management
+  description: Microservice handling authentication and credentials database in VSX project
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:9004'
+    description: Development server
+paths:
+
+  /shareManagement/{id}:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+
+    post:
+      summary: Get one titre
+      requestBody:
+        description: Share to get
+        content:
+          'application/json':
+              schema:
+                $ref: '#/components/schemas/share'
+      responses:
+        404:
+          description: Share not found
+        200:
+          description: Found Share
+
+
+  /shareManagement/currentPrice/{id}:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+
+    post:
+      summary: Get price of share
+      requestBody:
+          description: Share to get
+          content:
+            'application/json':
+                schema:
+                  $ref: '#/components/schemas/share'
+      responses:
+        404:
+          description: Share not found
+        200:
+          description: Found Share
+
+    put:
+        summary: Update price of share
+        requestBody:
+            description: Share to get
+            content:
+              'application/json':
+                  schema:
+                    $ref: '#/components/schemas/share'
+        responses:
+          404:
+              description: Share not found
+          200:
+              description: Found Share
+
+components:
+  schemas:
+    share:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        currentPrice:
+          type: number
+      example:
+        id: 1
+        name: Cat
+        currentPrice: 10
+
