@@ -28,17 +28,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/portfolio'
 
-    put:
-      summary: Update user's stock portfolio
-      requestBody:
-        description: New stock holdings of the user
-        content:
-          'application/json':
-            schema:
-              $ref: '#/components/schemas/portfolio'
+    post:
+      summary: Add or withdraw quantity of titles in user's portfolio
+      parameters:
+        - name: symbol
+          in: query
+          schema:
+            type: string
+          description: Symbol of the stock
+        - name: quantity
+          in: query
+          schema:
+            type: integer
+          description: Quantity of the stock to add or withdraw
+        - name: action
+          in: query
+          schema:
+            type: string
+            enum: [add, withdraw]
+          description: Action to perform (add or withdraw)
       responses:
         404:
           description: User not found
+        400:
+          description: Invalid symbol, quantity, or action
         200:
           description: User's stock portfolio updated successfully
 
