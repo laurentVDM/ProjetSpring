@@ -1,0 +1,24 @@
+openapi: 3.0.3
+info:
+  title: VSX Exchange Service
+  description: Microservice handling stock exchange in VSX project
+  version: 1.0.0
+servers:
+  - url: http://localhost:9006
+    description: Development server
+
+paths:
+  /bourse:
+    post:
+      summary: Submit an order to be executed
+      requestBody:
+        description: Order to submit
+        content:
+          'application/json':
+            schema:
+              $ref: 'VSX-order-service.yaml#/components/schemas/order'
+      responses:
+        400:
+          description: Order invalid
+        201:
+          description: Order submitted
