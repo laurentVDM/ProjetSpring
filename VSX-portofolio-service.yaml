@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: VSX Portfolio Service
+  description: Microservice handling user stock holdings in VSX project
+  version: 1.0.0
+servers:
+  - url: http://localhost:9003
+    description: Development server
+paths:
+  /portfolio/{pseudo}:
+    parameters:
+      - name: pseudo
+        in: path
+        schema:
+          type: string
+        example: PetWard
+        description: Pseudo of the user
+
+    get:
+      summary: Get user's stock portfolio
+      responses:
+        404:
+          description: User not found
+        200:
+          description: User's stock portfolio retrieved successfully
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/portfolio'
+
+    put:
+      summary: Update user's stock portfolio
+      requestBody:
+        description: New stock holdings of the user
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/portfolio'
+      responses:
+        404:
+          description: User not found
+        200:
+          description: User's stock portfolio updated successfully
+
+components:
+  schemas:
+    portfolio:
+      type: object
+      properties:
+        pseudo:
+          type: string
+        stocks:
+          type: array
+          items:
+            type: object
+            properties:
+              symbol:
+                type: string
+              quantity:
+                type: integer
+      example:
+        pseudo: PetWard
+        stocks:
+          - symbol: AAPL
+            quantity: 50
+          - symbol: MSFT
+            quantity: 25

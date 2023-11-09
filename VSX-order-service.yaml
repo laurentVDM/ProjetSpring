@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: VSX ordre service
+  title: VSX order service
   description: Microservice handling order database in VSX project
   version: 1.0.0
 servers:
