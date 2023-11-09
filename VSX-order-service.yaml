@@ -72,16 +72,15 @@ paths:
 
 components:
   schemas:
-    ordre:
+    order:
       type: object
       properties:
-
         orderId:
-          type: int
+          type: integer
         compteId:
-          type: int
+          type: integer
         titreId:
-          type: int
+          type: integer
         status:
           type: string
         typeOrder:
@@ -89,7 +88,7 @@ components:
         coteOrder:
           type: string
         prixLimit:
-          type: double
+          type: number
       example:
         orderId: 1
         compteId: 1
@@ -98,4 +97,3 @@ components:
         typeOrder: LIMIT
         coteOrders: Acheteur
         prixLimit: 10.0
-        
