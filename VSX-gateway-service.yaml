@@ -1,0 +1,354 @@
+openapi: 3.0.3
+info:
+  title: VSX Gateway Service
+  description: Microservice acting as the gateway in VSX project
+  version: 1.0.0
+servers:
+  - url: http://localhost:9000
+    description: Development server
+
+paths:
+  /authenticate/connect:
+    post:
+      summary: Connect user
+      requestBody:
+        description: Credentials of the user
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/credentials'
+      responses:
+        400:
+          description: Credentials invalid
+        401:
+          description: Wrong username or password
+        200:
+          description: User connected, returned JWT token
+          content:
+            'text/plain':
+              schema:
+                type: string
+                example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJhdXRoMCIsInBzZXVkbyI6IkNhdDRMaWZlIn0.LqfooEI-I9VTBo-isjm812ttnIPagMCwdhRkW5ngn0_tlLX86LRoxahgskmgIeWDbm4Mu3y3D8Qbhq_71hNQTA
+
+  /authentication/verify:
+    post:
+      summary: Verify JWT token
+      requestBody:
+        description: JWT token
+        content:
+          'text/plain':
+            schema:
+              type: string
+              example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJhdXRoMCIsInBzZXVkbyI6IkNhdDRMaWZlIn0.LqfooEI-I9VTBo-isjm812ttnIPagMCwdhRkW5ngn0_tlLX86LRoxahgskmgIeWDbm4Mu3y3D8Qbhq_71hNQTA
+      responses:
+        401:
+          description: Token couldn't be verified
+        200:
+          description: Token verified, returned user pseudo
+          content:
+            'application/json':
+              schema:
+                type: string
+                example: Cat4Life
+
+  /authentication/{pseudo}:
+    parameters:
+      - name: pseudo
+        in: path
+        description: Pseudo of the user
+        schema:
+          type: string
+
+    post:
+      summary: Create credentials
+      requestBody:
+        description: Credentials of the user
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/credentials'
+      responses:
+        400:
+          description: Credentials invalid
+        409:
+          description: Credentials already exists
+        201:
+          description: Credentials created
+
+    put:
+      summary: Update credentials
+      requestBody:
+        description: Credentials of the user
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/credentials'
+      responses:
+        400:
+          description: Credentials invalid
+        404:
+          description: Credentials not found
+        200:
+          description: Credentials updated
+
+    delete:
+      summary: Delete credentials
+      responses:
+        404:
+          description: Credentials not found
+        200:
+          description: Credentials deleted
+
+  /exchange/{id}:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+
+    post:
+      summary: Get one titre
+      requestBody:
+        description: Share to get
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/share'
+      responses:
+        404:
+          description: Share not found
+        200:
+          description: Found Share
+
+  /exchange/currentPrice/{id}:
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: string
+
+    post:
+      summary: Get price of share
+      requestBody:
+        description: Share to get
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/share'
+      responses:
+        404:
+          description: Share not found
+        200:
+          description: Found Share
+
+    put:
+      summary: Update price of share
+      requestBody:
+        description: Share to get
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/share'
+      responses:
+        404:
+          description: Share not found
+        200:
+          description: Found Share
+
+  /order/{orderId}:
+    parameters:
+      - name: orderId
+        in: path
+        schema:
+          type: int
+        example: 1
+        description: id of the order
+
+    post:
+      summary: Create an order
+      requestBody:
+        description: Order to create
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/order'
+      responses:
+        400:
+          description: OrderId in path and body doesn't match
+        409:
+          description: OrderId already used
+        201:
+          description: Order created
+
+    get:
+      summary: Read an order
+      responses:
+        404:
+          description: Order not found
+        200:
+          description: Found order
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/order'
+
+    put:
+      summary: Update an order
+      requestBody:
+        description: New values of the order
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/order'
+      responses:
+        400:
+          description: OrderId in path and body doesn't match
+        404:
+          description: Oder not found
+        200:
+          description: Order updated
+
+    delete:
+      summary: Delete an order
+      responses:
+        404:
+          description: Order not found
+        200:
+          description: Order deleted
+
+  /portfolio/{pseudo}:
+    parameters:
+      - name: pseudo
+        in: path
+        schema:
+          type: string
+        example: PetWard
+        description: Pseudo of the user
+
+    get:
+      summary: Get user's stock portfolio
+      responses:
+        404:
+          description: User not found
+        200:
+          description: User's stock portfolio retrieved successfully
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/portfolio'
+
+    post:
+      summary: Add or withdraw quantity of titles in user's portfolio
+      parameters:
+        - name: symbol
+          in: query
+          schema:
+            type: string
+          description: Symbol of the stock
+        - name: quantity
+          in: query
+          schema:
+            type: integer
+          description: Quantity of the stock to add or withdraw
+        - name: action
+          in: query
+          schema:
+            type: string
+            enum: [add, withdraw]
+          description: Action to perform (add or withdraw)
+      responses:
+        404:
+          description: User not found
+        400:
+          description: Invalid symbol, quantity, or action
+        200:
+          description: User's stock portfolio updated successfully
+
+components:
+  schemas:
+    credentials:
+      type: object
+      properties:
+        pseudo:
+          type: string
+        password:
+          type: string
+      example:
+        pseudo: Cat4Life
+        password: password123
+
+    share:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        currentPrice:
+          type: number
+      example:
+        id: 1
+        name: Cat
+        currentPrice: 10
+
+    order:
+      type: object
+      properties:
+        orderId:
+          type: integer
+        compteId:
+          type: integer
+        titreId:
+          type: integer
+        status:
+          type: string
+        typeOrder:
+          type: string
+        coteOrder:
+          type: string
+        prixLimit:
+          type: number
+      example:
+        orderId: 1
+        compteId: 1
+        titreId: 1
+        status: nouveau
+        typeOrder: LIMIT
+        coteOrders: Acheteur
+        prixLimit: 10.0
+
+    portfolio:
+      type: object
+      properties:
+        pseudo:
+          type: string
+        stocks:
+          type: array
+          items:
+            type: object
+            properties:
+              symbol:
+                type: string
+              quantity:
+                type: integer
+      example:
+        pseudo: PetWard
+        stocks:
+          - symbol: AAPL
+            quantity: 50
+          - symbol: MSFT
+            quantity: 25
+
+    user:
+      type: object
+      properties:
+        pseudo:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+      example:
+        pseudo: PetWard
+        firstname: Marine
+        lastname: Pelland

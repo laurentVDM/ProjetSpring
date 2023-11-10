@@ -4,7 +4,7 @@ info:
   description: Microservice handling stock exchange in VSX project
   version: 1.0.0
 servers:
-  - url: http://localhost:9006
+  - url: http://localhost:9002
     description: Development server
 
 paths:
